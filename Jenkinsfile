@@ -1,21 +1,27 @@
-pipeline {
-    agent {
-        docker {
-            image 'node:16-buster-slim' 
-            args '-p 3000:3000' 
-        }
+node {
+    def dockerImage = null
+
+    stage('Prepare Docker Environment') {
+        dockerImage = docker.image('node:16-buster-slim')
+        dockerImage.run('-p 3000:3000')
     }
-    stages {
-        stage('Build') { 
-            steps {
+
+    try {
+        stage('Build') {
+            dockerImage.inside {
                 sh 'npm cache clean --force'
                 sh 'npm install'
             }
         }
-        stage('Test') { 
-            steps {
-                sh './jenkins/scripts/test.sh' 
+
+        stage('Test') {
+            dockerImage.inside {
+                sh './jenkins/scripts/test.sh'
             }
+        }
+    } finally {
+        stage('Clean Up') {
+            dockerImage.stop()
         }
     }
 }
