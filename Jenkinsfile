@@ -26,7 +26,9 @@ node {
         }
     } finally {
         stage('Clean Up') {
+            echo 'Stopping Docker container...'
             dockerImage.stop()
+            echo 'Docker container stopped successfully.'
         }
     }
 }
