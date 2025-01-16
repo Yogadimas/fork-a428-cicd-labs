@@ -7,6 +7,11 @@ node {
     }
 
     try {
+        stage('Checkout') {
+            checkout scm
+            sh 'ls -la'
+        }
+
         stage('Build') {
             dockerImage.inside {
                 sh 'npm cache clean --force'
