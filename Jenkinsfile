@@ -20,6 +20,14 @@ node {
         }
     }
 
+    stage('Manual Approval') {
+        dockerImage.inside {
+            sh './jenkins/scripts/deliver.sh' 
+            input message: 'Lanjutkan ke tahap Deploy?' 
+            sh './jenkins/scripts/kill.sh'  
+        }
+    }
+
     stage('Deploy') {
         dockerImage.inside {
             sh './jenkins/scripts/deliver.sh' 
